@@ -1,11 +1,12 @@
 /*
  * Name: Jaden Plummer
  * Date: 2026-04-04
- * Description: This class stores information for a product in a retail store.
+ * Description: Stores product information and validates inputs.
  */
 
 public class Product {
 
+    // product details
     private String sku;
     private String productName;
     private double unitCost;
@@ -14,7 +15,7 @@ public class Product {
     private int quantityNeeded;
     private String specialInstructions;
 
-    // Default constructor
+    // default values if nothing is provided
     public Product() {
         this.sku = "00000000";
         this.productName = "Unknown Product";
@@ -25,9 +26,11 @@ public class Product {
         this.specialInstructions = "None";
     }
 
-    // Parameterized constructor
+    // constructor with values
     public Product(String sku, String productName, double unitCost, double salePrice,
                    int quantityOnHand, int quantityNeeded, String specialInstructions) {
+
+        // use setters so validation still happens
         setSku(sku);
         setProductName(productName);
         setUnitCost(unitCost);
@@ -37,6 +40,7 @@ public class Product {
         setSpecialInstructions(specialInstructions);
     }
 
+    // SKU must be 8+ digits
     public final String getSku() {
         return sku;
     }
@@ -48,6 +52,7 @@ public class Product {
         this.sku = sku;
     }
 
+    // name can't be empty
     public final String getProductName() {
         return productName;
     }
@@ -59,6 +64,7 @@ public class Product {
         this.productName = productName.trim();
     }
 
+    // cost must be 0 or more
     public final double getUnitCost() {
         return unitCost;
     }
@@ -70,6 +76,7 @@ public class Product {
         this.unitCost = unitCost;
     }
 
+    // price must be 0 or more
     public final double getSalePrice() {
         return salePrice;
     }
@@ -81,13 +88,14 @@ public class Product {
         this.salePrice = salePrice;
     }
 
+    // quantities must be positive
     public final int getQuantityOnHand() {
         return quantityOnHand;
     }
 
     public final void setQuantityOnHand(int quantityOnHand) {
         if (quantityOnHand < 0) {
-            throw new IllegalArgumentException("Quantity on hand must be 0 or greater.");
+            throw new IllegalArgumentException("Quantity must be 0 or greater.");
         }
         this.quantityOnHand = quantityOnHand;
     }
@@ -98,11 +106,12 @@ public class Product {
 
     public final void setQuantityNeeded(int quantityNeeded) {
         if (quantityNeeded < 0) {
-            throw new IllegalArgumentException("Quantity needed must be 0 or greater.");
+            throw new IllegalArgumentException("Quantity must be 0 or greater.");
         }
         this.quantityNeeded = quantityNeeded;
     }
 
+    // no validation needed
     public final String getSpecialInstructions() {
         return specialInstructions;
     }
@@ -115,13 +124,14 @@ public class Product {
         }
     }
 
+    // display product info
     @Override
     public String toString() {
         return "SKU: " + sku
                 + "\nProduct Name: " + productName
                 + "\nUnit Cost: $" + String.format("%.2f", unitCost)
                 + "\nSale Price: $" + String.format("%.2f", salePrice)
-                + "\nQuantity on Hand: " + quantityOnHand
+                + "\nQuantity on hand: " + quantityOnHand
                 + "\nQuantity Needed: " + quantityNeeded
                 + "\nSpecial Instructions: " + specialInstructions;
     }
