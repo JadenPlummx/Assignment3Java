@@ -1,8 +1,7 @@
 /*
  * Name: Jaden Plummer
  * Date: 2026-04-04
- * Description: This program simulates a small retail store by allowing
- *              the user to create, edit, delete, and display products.
+ * Description: Menu program to create, edit, delete, and display products.
  */
 
 import java.util.ArrayList;
@@ -44,10 +43,10 @@ public class ProductsApp {
                     displayAllProducts(products);
                     break;
                 case 7:
-                    System.out.println("Exiting program. Goodbye!");
+                    System.out.println("Goodbye!");
                     break;
                 default:
-                    System.out.println("Invalid menu option. Please try again.");
+                    System.out.println("Invalid option.");
             }
 
             System.out.println();
@@ -57,6 +56,7 @@ public class ProductsApp {
         input.close();
     }
 
+    // menu display
     public static void displayMenu() {
         System.out.println("===== Product Menu =====");
         System.out.println("1) Create Product");
@@ -68,196 +68,144 @@ public class ProductsApp {
         System.out.println("7) Exit");
     }
 
+    // create normal product
     public static void createProduct(Scanner input, ArrayList<Product> products) {
         try {
             String sku = readSku(input, products, null);
-            String productName = readNonBlankString(input, "Enter product name: ");
-            double unitCost = readDouble(input, "Enter unit cost: ");
-            double salePrice = readDouble(input, "Enter sale price: ");
-            int quantityOnHand = readInt(input, "Enter quantity on hand: ");
-            int quantityNeeded = readInt(input, "Enter quantity needed: ");
+            String name = readNonBlankString(input, "Enter product name: ");
+            double cost = readDouble(input, "Enter unit cost: ");
+            double price = readDouble(input, "Enter sale price: ");
+            int onHand = readInt(input, "Enter quantity on hand: ");
+            int needed = readInt(input, "Enter quantity needed: ");
 
             System.out.print("Enter special instructions: ");
-            String specialInstructions = input.nextLine();
+            String instructions = input.nextLine();
 
-            Product product = new Product(sku, productName, unitCost, salePrice,
-                    quantityOnHand, quantityNeeded, specialInstructions);
+            products.add(new Product(sku, name, cost, price, onHand, needed, instructions));
+            System.out.println("Product created.");
 
-            products.add(product);
-            System.out.println("Product created successfully.");
-
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
+    // create perishable product
     public static void createPerishableProduct(Scanner input, ArrayList<Product> products) {
         try {
             String sku = readSku(input, products, null);
-            String productName = readNonBlankString(input, "Enter product name: ");
-            double unitCost = readDouble(input, "Enter unit cost: ");
-            double salePrice = readDouble(input, "Enter sale price: ");
-            int quantityOnHand = readInt(input, "Enter quantity on hand: ");
-            int quantityNeeded = readInt(input, "Enter quantity needed: ");
+            String name = readNonBlankString(input, "Enter product name: ");
+            double cost = readDouble(input, "Enter unit cost: ");
+            double price = readDouble(input, "Enter sale price: ");
+            int onHand = readInt(input, "Enter quantity on hand: ");
+            int needed = readInt(input, "Enter quantity needed: ");
 
             System.out.print("Enter special instructions: ");
-            String specialInstructions = input.nextLine();
+            String instructions = input.nextLine();
 
-            Date expiryDate = readDate(input, "Enter expiry date (yyyy-MM-dd): ");
+            Date expiry = readDate(input, "Enter expiry date (yyyy-MM-dd): ");
 
-            PerishableProduct product = new PerishableProduct(sku, productName, unitCost, salePrice,
-                    quantityOnHand, quantityNeeded, specialInstructions, expiryDate);
+            products.add(new PerishableProduct(sku, name, cost, price, onHand, needed, instructions, expiry));
+            System.out.println("Perishable product created.");
 
-            products.add(product);
-            System.out.println("Perishable product created successfully.");
-
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
+    // edit product
     public static void editProductBySku(Scanner input, ArrayList<Product> products) {
-        System.out.print("Enter SKU to edit: ");
+        System.out.print("Enter SKU: ");
         String sku = input.nextLine();
 
-        Product product = findProductBySku(products, sku);
+        Product p = findProduct(products, sku);
 
-        if (product == null) {
-            System.out.println("No product found with that SKU.");
+        if (p == null) {
+            System.out.println("Not found.");
             return;
         }
 
         try {
-            String newSku = readSku(input, products, product);
-            String productName = readNonBlankString(input, "Enter new product name: ");
-            double unitCost = readDouble(input, "Enter new unit cost: ");
-            double salePrice = readDouble(input, "Enter new sale price: ");
-            int quantityOnHand = readInt(input, "Enter new quantity on hand: ");
-            int quantityNeeded = readInt(input, "Enter new quantity needed: ");
+            p.setProductName(readNonBlankString(input, "New name: "));
+            p.setUnitCost(readDouble(input, "New cost: "));
+            p.setSalePrice(readDouble(input, "New price: "));
+            p.setQuantityOnHand(readInt(input, "New quantity on hand: "));
+            p.setQuantityNeeded(readInt(input, "New quantity needed: "));
 
-            System.out.print("Enter new special instructions: ");
-            String specialInstructions = input.nextLine();
+            System.out.print("New instructions: ");
+            p.setSpecialInstructions(input.nextLine());
 
-            product.setSku(newSku);
-            product.setProductName(productName);
-            product.setUnitCost(unitCost);
-            product.setSalePrice(salePrice);
-            product.setQuantityOnHand(quantityOnHand);
-            product.setQuantityNeeded(quantityNeeded);
-            product.setSpecialInstructions(specialInstructions);
-
-            if (product instanceof PerishableProduct) {
-                Date expiryDate = readDate(input, "Enter new expiry date (yyyy-MM-dd): ");
-                ((PerishableProduct) product).setExpiryDate(expiryDate);
+            if (p instanceof PerishableProduct) {
+                ((PerishableProduct) p).setExpiryDate(readDate(input, "New expiry date: "));
             }
 
-            System.out.println("Product updated successfully.");
+            System.out.println("Updated.");
 
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
+    // delete product
     public static void deleteProductBySku(Scanner input, ArrayList<Product> products) {
-        System.out.print("Enter SKU to delete: ");
+        System.out.print("Enter SKU: ");
         String sku = input.nextLine();
 
-        Product product = findProductBySku(products, sku);
+        Product p = findProduct(products, sku);
 
-        if (product == null) {
-            System.out.println("No product found with that SKU.");
-            return;
-        }
-
-        products.remove(product);
-        System.out.println("Product deleted successfully.");
-    }
-
-    public static void displayProductBySku(Scanner input, ArrayList<Product> products) {
-        System.out.print("Enter SKU to display: ");
-        String sku = input.nextLine();
-
-        Product product = findProductBySku(products, sku);
-
-        if (product == null) {
-            System.out.println("No product found with that SKU.");
+        if (p != null) {
+            products.remove(p);
+            System.out.println("Deleted.");
         } else {
-            System.out.println();
-            System.out.println(product);
+            System.out.println("Not found.");
         }
     }
 
+    // display one product
+    public static void displayProductBySku(Scanner input, ArrayList<Product> products) {
+        System.out.print("Enter SKU: ");
+        String sku = input.nextLine();
+
+        Product p = findProduct(products, sku);
+
+        if (p != null) {
+            System.out.println(p);
+        } else {
+            System.out.println("Not found.");
+        }
+    }
+
+    // display all products
     public static void displayAllProducts(ArrayList<Product> products) {
         if (products.isEmpty()) {
-            System.out.println("There are no products to display.");
+            System.out.println("No products.");
             return;
         }
 
-        for (int i = 0; i < products.size(); i++) {
-            System.out.println("----- Product " + (i + 1) + " -----");
-            System.out.println(products.get(i));
-            System.out.println();
+        for (Product p : products) {
+            System.out.println("------------------");
+            System.out.println(p);
         }
     }
 
-    public static Product findProductBySku(ArrayList<Product> products, String sku) {
-        for (Product product : products) {
-            if (product.getSku().equals(sku)) {
-                return product;
+    // find product by sku
+    public static Product findProduct(ArrayList<Product> products, String sku) {
+        for (Product p : products) {
+            if (p.getSku().equals(sku)) {
+                return p;
             }
         }
         return null;
     }
 
-    public static String readSku(Scanner input, ArrayList<Product> products, Product currentProduct) {
-        while (true) {
-            System.out.print("Enter SKU (8 or more digits): ");
-            String sku = input.nextLine();
-
-            if (!sku.matches("\\d{8,}")) {
-                System.out.println("SKU must contain 8 or more digits.");
-                continue;
-            }
-
-            Product existingProduct = findProductBySku(products, sku);
-
-            if (existingProduct != null && existingProduct != currentProduct) {
-                System.out.println("That SKU already exists. Enter a different SKU.");
-                continue;
-            }
-
-            return sku;
-        }
-    }
-
-    public static String readNonBlankString(Scanner input, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String value = input.nextLine();
-
-            if (!value.trim().isEmpty()) {
-                return value;
-            }
-
-            System.out.println("This field cannot be blank.");
-        }
-    }
-
+    // input helpers
     public static int readInt(Scanner input, String prompt) {
         while (true) {
             try {
                 System.out.print(prompt);
                 int value = Integer.parseInt(input.nextLine());
-
-                if (value < 0) {
-                    System.out.println("Value must be 0 or greater.");
-                } else {
-                    return value;
-                }
-
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid whole number.");
-            }
+                if (value >= 0) return value;
+            } catch (Exception e) {}
+            System.out.println("Invalid number.");
         }
     }
 
@@ -266,31 +214,52 @@ public class ProductsApp {
             try {
                 System.out.print(prompt);
                 double value = Double.parseDouble(input.nextLine());
+                if (value >= 0) return value;
+            } catch (Exception e) {}
+            System.out.println("Invalid number.");
+        }
+    }
 
-                if (value < 0) {
-                    System.out.println("Value must be 0 or greater.");
-                } else {
-                    return value;
-                }
+    public static String readNonBlankString(Scanner input, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String value = input.nextLine();
+            if (!value.trim().isEmpty()) return value;
+            System.out.println("Cannot be blank.");
+        }
+    }
 
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid decimal number.");
+    public static String readSku(Scanner input, ArrayList<Product> products, Product current) {
+        while (true) {
+            System.out.print("Enter SKU: ");
+            String sku = input.nextLine();
+
+            if (!sku.matches("\\d{8,}")) {
+                System.out.println("Must be 8+ digits.");
+                continue;
             }
+
+            Product existing = findProduct(products, sku);
+
+            if (existing != null && existing != current) {
+                System.out.println("SKU already exists.");
+                continue;
+            }
+
+            return sku;
         }
     }
 
     public static Date readDate(Scanner input, String prompt) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        dateFormat.setLenient(false);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setLenient(false);
 
         while (true) {
             try {
                 System.out.print(prompt);
-                String dateInput = input.nextLine();
-                return dateFormat.parse(dateInput);
-
+                return format.parse(input.nextLine());
             } catch (ParseException e) {
-                System.out.println("Please enter the date in yyyy-MM-dd format.");
+                System.out.println("Invalid date format.");
             }
         }
     }
